@@ -1,0 +1,31 @@
+{
+  "name": "@cuonghx.ngen/playshub-shop-contracts",
+  "version": "0.9.1",
+  "description": "",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/typechain-types/index.js",
+  "types": "dist/typechain-types/index.d.ts",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "clean": "hardhat clean  && rimraf dist cache",
+    "build": "npm run clean & npm run compile && tsc",
+    "deploy:arbseb": "hardhat run --network arbsep scripts/deploy.ts",
+    "deploy:bsc-testnet": "hardhat run --network bsc-testnet scripts/deploy.ts"
+  },
+  "keywords": [],
+  "author": "0xcuonghx",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/hardhat-upgrades": "^3.2.1",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.8",
+    "rimraf": "^6.0.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^5.0.2"
+  }
+}
