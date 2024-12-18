@@ -1,0 +1,41 @@
+version: '3'
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@admin.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    ports:
+      - 8080:80
+    depends_on:
+      - postgres
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    env_file:
+      - .env
+    environment:
+      - PORT==${PORT}
+      - IS_MAINNET=${IS_MAINNET}
+      - API_KEY=${API_KEY}
+      - MNEMONICS=${MNEMONICS}
+    ports:
+      - '${PORT}:${PORT}'
+volumes:
+  postgres-data:
