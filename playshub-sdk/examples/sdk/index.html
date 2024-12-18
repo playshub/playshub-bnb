@@ -1,0 +1,50 @@
+<head>
+  <!-- <script src="../../dist/index.js"></script> -->
+  <script src="https://unpkg.com/@cuonghx.ngen/cat-battle-evm-sdk@1.0.0"></script>
+</head>
+<body>
+  <script>
+    const plugin = new CatBattleEvmSdk.default({ shopAddress: "0xe7680BE3C42bec37671AD25933d7847De2a842B8"});
+
+    function IsConnected() {
+      document.getElementById("showIsConnected").innerHTML = plugin.isConnected();
+    }
+
+    function GetAccount() {
+      document.getElementById("showGetAccount").innerHTML = plugin.getAccount();
+    }
+
+    async function GetBalance() {
+      const balance = await  plugin.getBalance()
+      document.getElementById("showGetBalance").innerHTML = balance;
+    }
+
+
+    async function Connect() {
+      const account = await plugin.connect()
+    }
+
+    async function PurchaseItem() {
+      const hash = await plugin.purchaseItem(JSON.stringify({
+        id: "0",
+        buyerId: "test",
+        value: "1000000000000000"
+      }))
+
+      console.log(hash)
+    }
+  </script>
+
+  <button id="connect" onclick="Connect()">Connect</button>
+  <button id="disconnect" onclick="plugin.disconnect()">Disconnect</button>
+  <button id="isConnected" onclick="IsConnected()">Is connected ?</button>
+  <button id="getAccount" onclick="GetAccount()">Get Account</button>
+  <button id="getBalance" onclick="GetBalance()">Get Balance</button>
+  <button id="switchChain" onclick="plugin.switchChain()">Switch Chain</button>
+
+  <button id="purchaseItem" onclick="PurchaseItem()">Purchase Item</button>
+
+  <p id="showIsConnected"></p>
+  <p id="showGetAccount"></p>
+  <p id="showGetBalance"></p>
+</body>

@@ -1,0 +1,23 @@
+{
+  "name": "@cuonghx.ngen/cat-battle-evm-sdk",
+  "version": "1.0.1",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": "0xcuonghx",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@wagmi/core": "^2.13.4",
+    "viem": "^2.20.0",
+    "zod": "^3.23.8"
+  },
+  "dependencies": {
+    "@wagmi/connectors": "^5.1.7"
+  }
+}

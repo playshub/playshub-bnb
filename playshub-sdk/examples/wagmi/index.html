@@ -1,0 +1,30 @@
+<script type="module">
+  import { createClient } from 'https://esm.sh/viem'
+  import { createConfig, http, connect } from 'https://esm.sh/@wagmi/core@2.x'
+  import { injected } from 'https://esm.sh/@wagmi/connectors'
+  import { mainnet } from 'https://esm.sh/@wagmi/core@2.x/chains'
+
+  const config = createConfig({
+  chains: [mainnet],
+  transports: {
+    [mainnet.id]: http(),
+  },
+  connectors: [injected()], 
+  })
+
+  async function connectWallet(connector, options = {}) {
+        const result = await connect(config, {
+            connector: connector(options)
+        })
+   console.log(result)
+    }
+    
+  window.onload = async () =>  {
+    document.getElementById('metamask').onclick = async () => await connectWallet(injected)
+  }
+
+</script>
+
+<body>
+  <button id="metamask">Connect to Metamask</button>
+</body>
