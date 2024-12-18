@@ -1,0 +1,24 @@
+{
+  "name": "check-in",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "deploy:testnet": "npx hardhat ignition deploy ./ignition/modules/CheckIn.ts --network bsc-testnet",
+    "deploy:opbnb": "npx hardhat ignition deploy ./ignition/modules/CheckIn.ts --network opbnb"
+  },
+  "keywords": [],
+  "author": "0xcuonghx",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.12"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0",
+    "viem": "^2.21.19"
+  }
+}
