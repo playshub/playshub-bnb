@@ -31,11 +31,10 @@ interface IPlayshubShop {
         uint256 indexed id,
         string name,
         uint256 price,
-        string buyerId
+        string userId
     );
 
-    // TO-DO: Consider remove buyerId to save gas, using sender address instead
-    function purchaseItem(uint256 id, string memory buyerId) external payable;
+    function purchaseItem(uint256 id, string memory userId) external payable;
 
     function addItem(uint256 id, string memory name, uint256 price) external;
 
@@ -102,7 +101,7 @@ contract PlayshubShop is IPlayshubShop, Ownable2Step, Pausable {
 
     function purchaseItem(
         uint256 id,
-        string memory buyerId
+        string memory userId
     ) external payable whenNotPaused onlyIfItemExist(id) {
         if (items[id].status != Status.OnSell) {
             revert InvalidItemStatus();
@@ -113,7 +112,7 @@ contract PlayshubShop is IPlayshubShop, Ownable2Step, Pausable {
             revert InsufficientBalance();
         }
 
-        emit ItemPurchased(_msgSender(), id, item.name, item.price, buyerId);
+        emit ItemPurchased(_msgSender(), id, item.name, item.price, userId);
     }
 
     function withdraw(uint256 amount) external onlyOwner {

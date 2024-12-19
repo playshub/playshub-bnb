@@ -1,32 +1,24 @@
 {
-  "name": "@cuonghx.ngen/playshub-shop-contracts",
-  "version": "0.9.1",
-  "description": "",
-  "files": [
-    "dist"
-  ],
-  "main": "dist/typechain-types/index.js",
-  "types": "dist/typechain-types/index.d.ts",
+  "name": "check-in",
+  "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
-    "compile": "hardhat compile",
     "test": "hardhat test",
-    "clean": "hardhat clean  && rimraf dist cache",
-    "build": "npm run clean & npm run compile && tsc",
-    "deploy:arbseb": "hardhat run --network arbsep scripts/deploy.ts",
-    "deploy:bsc-testnet": "hardhat run --network bsc-testnet scripts/deploy.ts"
+    "compile": "hardhat compile",
+    "deploy:testnet": "npx hardhat ignition deploy ./ignition/modules/PlayshubCheckIn.ts --network bsc-testnet",
+    "deploy:opbnb": "npx hardhat ignition deploy ./ignition/modules/PlayshubCheckIn.ts --network opbnb"
   },
   "keywords": [],
   "author": "0xcuonghx",
   "license": "ISC",
+  "description": "",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@openzeppelin/hardhat-upgrades": "^3.2.1",
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
     "dotenv": "^16.4.5",
-    "hardhat": "^2.22.8",
-    "rimraf": "^6.0.1"
+    "hardhat": "^2.22.12"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.1.0",
-    "@openzeppelin/contracts-upgradeable": "^5.0.2"
+    "viem": "^2.21.19"
   }
 }
