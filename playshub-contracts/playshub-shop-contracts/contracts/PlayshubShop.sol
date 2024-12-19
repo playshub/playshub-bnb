@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.24;
 
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {Ownable2StepUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
-import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 
 enum Status {
+    NoneExist,
     OnSell
 }
 
@@ -37,115 +37,78 @@ interface IPlayshubShop {
     // TO-DO: Consider remove buyerId to save gas, using sender address instead
     function purchaseItem(uint256 id, string memory buyerId) external payable;
 
-    function addItem(string memory name, uint256 price) external;
+    function addItem(uint256 id, string memory name, uint256 price) external;
 
     function getItem(uint256 id) external view returns (Item memory);
-
-    function totalItems() external view returns (uint256);
 }
 
 error InvalidItemId();
 error InsufficientBalance();
 error InvalidItemStatus();
 error ItemLengthMisMatch();
+error ItemAlreadyExist();
+error ItemNotExist();
 
-contract PlayshubShop is
-    IPlayshubShop,
-    Initializable,
-    UUPSUpgradeable,
-    Ownable2StepUpgradeable,
-    PausableUpgradeable
-{
+contract PlayshubShop is IPlayshubShop, Ownable2Step, Pausable {
     string public constant VERSION = "0.9.0";
 
     event Withdrawn(address indexed sender, uint256 amount);
 
-    /// @custom:storage-location erc7201:PlaysHub.storage.PlayshubShop
-    struct PlayshubShopStorage {
-        mapping(uint256 => Item) items;
-        uint256 nextItemId;
-    }
+    mapping(uint256 => Item) private items;
 
-    // keccak256(abi.encode(uint256(keccak256("PlaysHub.storage.PlayshubShop")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant PlayshubShopStorageLocation =
-        0xadb6f487badddc1ee7708c8641d75e23f4d61ac9e01c30b2e72a0531a5cac400;
-
-    function _getPlayshubShopStorage()
-        private
-        pure
-        returns (PlayshubShopStorage storage $)
-    {
-        assembly {
-            $.slot := PlayshubShopStorageLocation
+    modifier onlyIfItemExist(uint256 id) {
+        if (items[id].status == Status.NoneExist) {
+            revert ItemNotExist();
         }
+        _;
     }
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
+    modifier onlyIfItemNoneExist(uint256 id) {
+        if (items[id].status != Status.NoneExist) {
+            revert ItemAlreadyExist();
+        }
+        _;
     }
 
-    function initialize(
+    constructor(
         address owner_,
+        uint256[] memory itemIds_,
         string[] memory itemNames_,
         uint256[] memory itemPrices_
-    ) public initializer {
-        __PlayshubShop_init_unchained(itemNames_, itemPrices_);
-        __UUPSUpgradeable_init();
-        __Ownable_init_unchained(owner_);
-        __Pausable_init();
-    }
-
-    function __PlayshubShop_init_unchained(
-        string[] memory itemNames_,
-        uint256[] memory itemPrices_
-    ) internal onlyInitializing {
-        if (itemNames_.length != itemPrices_.length) {
+    ) Pausable() Ownable(owner_) {
+        if (itemIds_.length != itemNames_.length) {
+            revert ItemLengthMisMatch();
+        }
+        if (itemIds_.length != itemPrices_.length) {
             revert ItemLengthMisMatch();
         }
 
         for (uint256 i = 0; i < itemNames_.length; i++) {
-            _addItem(itemNames_[i], itemPrices_[i]);
+            _addItem(itemIds_[i], itemNames_[i], itemPrices_[i]);
         }
     }
 
     function addItem(
+        uint256 id,
         string memory name,
         uint256 price
-    ) external override onlyOwner {
-        _addItem(name, price);
+    ) external override onlyOwner onlyIfItemNoneExist(id) {
+        _addItem(id, name, price);
     }
 
     function getItem(uint256 id) external view override returns (Item memory) {
-        PlayshubShopStorage storage $ = _getPlayshubShopStorage();
-
-        if (id >= $.nextItemId) {
-            revert InvalidItemId();
-        }
-
-        return $.items[id];
-    }
-
-    function totalItems() external view override returns (uint256) {
-        PlayshubShopStorage storage $ = _getPlayshubShopStorage();
-        return $.nextItemId;
+        return items[id];
     }
 
     function purchaseItem(
         uint256 id,
         string memory buyerId
-    ) external payable whenNotPaused {
-        PlayshubShopStorage storage $ = _getPlayshubShopStorage();
-
-        if (id >= $.nextItemId) {
-            revert InvalidItemId();
-        }
-
-        if ($.items[id].status != Status.OnSell) {
+    ) external payable whenNotPaused onlyIfItemExist(id) {
+        if (items[id].status != Status.OnSell) {
             revert InvalidItemStatus();
         }
 
-        Item memory item = $.items[id];
+        Item memory item = items[id];
         if (msg.value != item.price) {
             revert InsufficientBalance();
         }
@@ -170,22 +133,9 @@ contract PlayshubShop is
         _unpause();
     }
 
-    function _addItem(string memory name, uint256 price) internal {
-        PlayshubShopStorage storage $ = _getPlayshubShopStorage();
+    function _addItem(uint256 id, string memory name, uint256 price) internal {
+        items[id] = Item(id, name, price, Status.OnSell);
 
-        $.items[$.nextItemId] = Item($.nextItemId, name, price, Status.OnSell);
-        $.nextItemId++;
-
-        emit ItemAdded(
-            _msgSender(),
-            $.nextItemId - 1,
-            name,
-            price,
-            Status.OnSell
-        );
+        emit ItemAdded(_msgSender(), id, name, price, Status.OnSell);
     }
-
-    function _authorizeUpgrade(
-        address newImplementation
-    ) internal override onlyOwner {}
 }

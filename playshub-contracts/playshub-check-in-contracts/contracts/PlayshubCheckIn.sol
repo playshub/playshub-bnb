@@ -13,7 +13,7 @@ error TokenIsSupported();
 error TokenIsUnsupported();
 error InsufficientBalance();
 
-contract CheckIn is Ownable, Pausable, ReentrancyGuard {
+contract PlayshubCheckIn is Ownable, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     address public constant NATIVE_TOKEN = address(0);
 
@@ -38,7 +38,7 @@ contract CheckIn is Ownable, Pausable, ReentrancyGuard {
     event TokenSupportRemoved(address indexed token);
     event Withdrawn(address indexed token, address indexed to, uint256 amount);
 
-    mapping(address => CheckInRecord) private _checkInRecords;
+    mapping(string => CheckInRecord) private _checkInRecords;
     mapping(address => CheckInToken) private _checkInTokens;
 
     constructor(
@@ -70,9 +70,9 @@ contract CheckIn is Ownable, Pausable, ReentrancyGuard {
         );
 
         uint256 latestTimestamp = block.timestamp;
-        uint256 count = _checkInRecords[_msgSender()].count + 1;
+        uint256 count = _checkInRecords[userId].count + 1;
 
-        _checkInRecords[_msgSender()] = CheckInRecord(latestTimestamp, count);
+        _checkInRecords[userId] = CheckInRecord(latestTimestamp, count);
 
         emit CheckedIn(_msgSender(), token, latestTimestamp, count, userId);
     }
@@ -88,9 +88,9 @@ contract CheckIn is Ownable, Pausable, ReentrancyGuard {
         }
 
         uint256 latestTimestamp = block.timestamp;
-        uint256 count = _checkInRecords[_msgSender()].count + 1;
+        uint256 count = _checkInRecords[userId].count + 1;
 
-        _checkInRecords[_msgSender()] = CheckInRecord(latestTimestamp, count);
+        _checkInRecords[userId] = CheckInRecord(latestTimestamp, count);
 
         emit CheckedIn(
             _msgSender(),
@@ -119,9 +119,9 @@ contract CheckIn is Ownable, Pausable, ReentrancyGuard {
     }
 
     function checkInRecordOf(
-        address account
+        string memory userId
     ) public view returns (CheckInRecord memory) {
-        return _checkInRecords[account];
+        return _checkInRecords[userId];
     }
 
     function pause() external onlyOwner {

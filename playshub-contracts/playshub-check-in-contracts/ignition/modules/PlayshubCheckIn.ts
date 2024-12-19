@@ -7,14 +7,14 @@ import { zeroAddress, parseEther } from "viem";
 
 configDotenv();
 
-const CheckInModule = buildModule("CheckInModule", (m) => {
-  const checkIn = m.contract("CheckIn", [
+const PlayshubCheckInModule = buildModule("PlayshubCheckInModule", (m) => {
+  const PlayshubCheckIn = m.contract("PlayshubCheckIn", [
     m.getParameter("owner", process.env.OWNER_ADDRESS),
     m.getParameter("tokens", [zeroAddress]),
     m.getParameter("values", [parseEther("0.000075")]),
   ]);
 
-  return { checkIn };
+  return { PlayshubCheckIn };
 });
 
-export default CheckInModule;
+export default PlayshubCheckInModule;

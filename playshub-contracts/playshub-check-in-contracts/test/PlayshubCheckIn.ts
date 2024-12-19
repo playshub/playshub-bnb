@@ -19,7 +19,7 @@ describe("CheckIn", function () {
 
     await publicClient.waitForTransactionReceipt({ hash });
 
-    const checkIn = await hre.viem.deployContract("CheckIn", [
+    const checkIn = await hre.viem.deployContract("PlayshubCheckIn", [
       owner.account.address,
       [zeroAddress, mockERC20.address],
       [parseEther("0.000075"), parseEther("1")],
@@ -57,7 +57,7 @@ describe("CheckIn", function () {
           deployCheckInFixture
         );
 
-        const hash = await checkIn.write.checkIn({
+        const hash = await checkIn.write.checkIn(["mockUserId"], {
           value: parseEther("0.000075"),
         });
         await publicClient.waitForTransactionReceipt({ hash });
@@ -71,7 +71,7 @@ describe("CheckIn", function () {
         expect(events[0].args.count).to.equal(1n);
 
         expect(
-          (await checkIn.read.checkInRecordOf([owner.account.address])).count
+          (await checkIn.read.checkInRecordOf(["mockUserId"])).count
         ).to.eql(1n);
 
         expect(
@@ -90,7 +90,7 @@ describe("CheckIn", function () {
         ]);
         await publicClient.waitForTransactionReceipt({ hash });
 
-        hash = await checkIn.write.checkIn([mockERC20.address]);
+        hash = await checkIn.write.checkIn([mockERC20.address, "mockUserId"]);
         await publicClient.waitForTransactionReceipt({ hash });
 
         const events = await checkIn.getEvents.CheckedIn();
@@ -102,7 +102,7 @@ describe("CheckIn", function () {
         expect(events[0].args.count).to.equal(1n);
 
         expect(
-          (await checkIn.read.checkInRecordOf([owner.account.address])).count
+          (await checkIn.read.checkInRecordOf(["mockUserId"])).count
         ).to.eql(1n);
 
         expect(await mockERC20.read.balanceOf([checkIn.address])).to.eql(
@@ -197,15 +197,15 @@ describe("CheckIn", function () {
           address: alice.account.address,
         });
 
-        let hash = await checkIn.write.checkIn({
+        let hash = await checkIn.write.checkIn(["mockUserId"], {
           value: parseEther("0.000075"),
         });
         await publicClient.waitForTransactionReceipt({ hash });
-        hash = await checkIn.write.checkIn({
+        hash = await checkIn.write.checkIn(["mockUserId"], {
           value: parseEther("0.000075"),
         });
         await publicClient.waitForTransactionReceipt({ hash });
-        hash = await checkIn.write.checkIn({
+        hash = await checkIn.write.checkIn(["mockUserId"], {
           value: parseEther("0.000075"),
         });
         await publicClient.waitForTransactionReceipt({ hash });

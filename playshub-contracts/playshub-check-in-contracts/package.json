@@ -5,8 +5,8 @@
   "scripts": {
     "test": "hardhat test",
     "compile": "hardhat compile",
-    "deploy:testnet": "npx hardhat ignition deploy ./ignition/modules/CheckIn.ts --network bsc-testnet",
-    "deploy:opbnb": "npx hardhat ignition deploy ./ignition/modules/CheckIn.ts --network opbnb"
+    "deploy:testnet": "npx hardhat ignition deploy ./ignition/modules/PlayshubCheckIn.ts --network bsc-testnet",
+    "deploy:opbnb": "npx hardhat ignition deploy ./ignition/modules/PlayshubCheckIn.ts --network opbnb"
   },
   "keywords": [],
   "author": "0xcuonghx",
