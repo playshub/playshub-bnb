@@ -24,7 +24,6 @@
     "migration:revert": "npm run typeorm -- migration:revert"
   },
   "dependencies": {
-    "@cuonghx.ngen/cat-battle-contracts": "^0.9.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^10.0.0",
@@ -34,13 +33,8 @@
     "@nestjs/schedule": "^4.0.2",
     "@nestjs/typeorm": "^10.0.2",
     "@nestjs/websockets": "^10.3.9",
-    "@ton/core": "^0.56.3",
-    "@ton/crypto": "^3.2.0",
-    "@ton/ton": "^13.11.2",
-    "buffer": "^6.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
-    "ethers": "^6.13.2",
     "grammy": "^1.29.0",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.0",
