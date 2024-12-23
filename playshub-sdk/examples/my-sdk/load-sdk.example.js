@@ -1,4 +1,4 @@
-const plugin = new SolUnitySDK.default({
+const plugin = new BscUnitySDK.default({
   privateKey: "xxx",
   purchaseItemAddress: "",
   rpcUrl: "",
