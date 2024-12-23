@@ -75,7 +75,8 @@ export class EvmWsProvidersService
     this.logger.debug('Waiting for service to bootstrap');
     return new Promise<void>((resolve) => {
       const checkReadyAndResolve = () => {
-        const currentWebSocketProvider = this._getCurrentWebSocketProvider();
+        const currentWebSocketProvider =
+          this._getCurrentWebSocketProvider.bind(this)();
         if (
           currentWebSocketProvider &&
           currentWebSocketProvider.websocket &&
