@@ -1,0 +1,36 @@
+<head>
+    <!-- <script src="https://unpkg.com/@cuonghx.ngen/sol-unity-sdk@0.0.1"></script> -->
+    <script src="/Users/cuonghx/Documents/repositories/n-gen/playshub-solana/unity-sdk/dist/index.js"></script>
+</head>
+
+<body>
+  <script src="./load-sdk.js"></script>
+
+
+  <button id="getAccount" onclick="GetAccount()">Get Account</button>
+  <button id="getAccount" onclick="GetBalance()">Get Balance</button>
+  <button id="sendTon" onclick="Purchase()">Purchase</button>
+
+  <p id="showIsConnected"></p>
+  <p id="showGetAccount"></p>
+  <p id="showGetBalance"></p>
+
+  <script>
+ 
+
+    function GetAccount() {
+      document.getElementById("showGetAccount").innerHTML = plugin.getPublicKey();
+    }
+    async function GetBalance() {
+      const balance = await  plugin.getBalance()
+      document.getElementById("showGetBalance").innerHTML = balance;
+    }
+
+    async function Purchase() {
+      const result = await plugin.purchaseItem("test-user-id", "test-item-id", "0.306");
+      console.log(result);
+    }
+
+   
+  </script>
+</body>

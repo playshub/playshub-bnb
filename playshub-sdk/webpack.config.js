@@ -20,20 +20,13 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     library: {
       type: "umd",
-      name: "CatBattleEvmSdk",
+      name: "BscUnitySDK",
     },
     globalObject: "this",
   },
   mode: "production",
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
-    fallback: {
-      buffer: require.resolve("buffer/"),
-    },
   },
-  plugins: [
-    new ProvidePlugin({
-      Buffer: ["buffer", "Buffer"],
-    }),
-  ],
+  plugins: [],
 };

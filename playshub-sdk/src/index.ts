@@ -1,158 +1,103 @@
 import {
-  Config,
-  connect,
-  createConfig,
-  getAccount,
+  createWalletClient,
+  formatEther,
+  Hex,
   http,
-  disconnect,
-  switchChain,
-  getBalance,
-  simulateContract,
-  writeContract,
-  getConnectors,
-} from "@wagmi/core";
-import { bscTestnet } from "@wagmi/core/chains";
-import { formatEther } from "viem";
-import { z } from "zod";
-import { injected } from "@wagmi/connectors";
+  parseAbi,
+  parseEther,
+  publicActions,
+  WalletClient,
+} from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 
-const purchaseItemSchema = z.object({
-  id: z.string(),
-  buyerId: z.string(),
-  value: z.string(),
-});
+export interface BscUnitySdkConfig {
+  privateKey: string;
+  purchaseItemAddress: string;
 
-export interface CatBattleEvmSdkProps {
-  shopAddress: string;
+  rpcUrl: string;
 }
 
-export default class CatBattleEvmSdk {
-  private config: Config;
-  private shopAddress: string;
+export default class BscUnitySdk {
+  private config: BscUnitySdkConfig;
+  private walletClient: WalletClient;
 
-  constructor({ shopAddress }: CatBattleEvmSdkProps) {
-    this.shopAddress = shopAddress;
-    this.config = createConfig({
-      chains: [bscTestnet],
-      transports: {
-        [bscTestnet.id]: http(),
-      },
-      connectors: [injected()],
-      multiInjectedProviderDiscovery: false,
-    });
-  }
+  constructor(config: BscUnitySdkConfig) {
+    console.log("-----------BscUnitySdkConfig initialized-----------");
+    console.log("config:", config);
 
-  async connect() {
-    const connectors = getConnectors(this.config);
-    const connector = connectors[0];
+    if (config.privateKey != "null") {
+      const account = privateKeyToAccount(config.privateKey as Hex);
 
-    await connect(this.config, { connector });
-    return this.getAccount();
-  }
+      const walletClient = createWalletClient({
+        transport: http(config.rpcUrl),
+        account,
+      });
 
-  async disconnect() {
-    const connectors = getConnectors(this.config);
-    const connector = connectors[0];
-    // TO-DO: https://github.com/wevm/wagmi/issues/69#issuecomment-1011131480
-    await disconnect(this.config, { connector });
-  }
-
-  isConnected() {
-    const account = getAccount(this.config);
-    return account.isConnected;
-  }
-
-  getAccount() {
-    const account = getAccount(this.config);
-
-    return this._resultToJsonString({
-      address: account.address,
-      chain: account.chainId === bscTestnet.id ? "BSC_TESTNET" : "UNKNOWN",
-    });
-  }
-
-  switchChain() {
-    switchChain(this.config, { chainId: bscTestnet.id });
-  }
-
-  async getBalance() {
-    const account = getAccount(this.config);
-
-    const balance = await getBalance(this.config, {
-      address: account.address,
-    });
-
-    return this._resultToJsonString({
-      balance: balance.value.toString(),
-      formatter: formatEther(balance.value),
-    });
-  }
-
-  async purchaseItem(args: string) {
-    const parsedArgs = this._jsonStringToArgs(args);
-    const { success, error } = purchaseItemSchema.safeParse(parsedArgs);
-
-    if (!success) {
-      console.error(error, args, parsedArgs);
-      throw Error("Invalid args");
+      this.walletClient = walletClient;
     }
 
-    const abi = [
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "id",
-            type: "uint256",
-          },
-          {
-            internalType: "string",
-            name: "buyerId",
-            type: "string",
-          },
-        ],
-        name: "purchaseItem",
-        outputs: [],
-        stateMutability: "payable",
-        type: "function",
-      },
-    ] as const;
-
-    const { request } = await simulateContract(this.config, {
-      abi,
-      address: this.shopAddress,
-      functionName: "purchaseItem",
-      args: [parsedArgs.id, parsedArgs.buyerId],
-      value: parsedArgs.value,
-    });
-    const hash = await writeContract(this.config, request);
-    return hash;
+    this.config = config;
   }
 
-  private _resultToJsonString(result: null | Record<string, any>) {
-    if (result == null) {
-      return JSON.stringify({});
-    } else if (typeof result === "object") {
-      return JSON.stringify(result);
-    } else {
-      throw Error("Invalid result");
-    }
-  }
-
-  private _jsonStringToArgs(args: string) {
+  purchaseItem = async (userId: string, itemId: string) => {
     try {
-      const parsedArgs = JSON.parse(args);
-      if (this._isEmptyObject(parsedArgs)) {
-        return undefined;
+      if (this.config.privateKey == "null") {
+        throw new Error("Private key is not set");
       }
 
-      return parsedArgs;
-    } catch (error) {
-      throw Error("Invalid JSON string");
-    }
-  }
+      const [_, __, amount] = await this.walletClient
+        .extend(publicActions)
+        .readContract({
+          address: this.config.purchaseItemAddress as Hex,
+          abi: parseAbi([
+            "function getItem(uint256 id) external view returns (uint256, string, uint256, uint8)",
+          ]),
+          functionName: "getItem",
+          args: [BigInt(itemId)],
+        });
 
-  private _isEmptyObject(obj: Record<string, any>) {
-    return Object.getOwnPropertyNames(obj).length === 0;
-  }
+      if ((await this.getBalance()) < parseFloat(formatEther(amount))) {
+        throw new Error("Insufficient balance");
+      }
+
+      console.log("Purchasing...");
+      const { request } = await this.walletClient
+        .extend(publicActions)
+        .simulateContract({
+          account: this.walletClient.account,
+          address: this.config.purchaseItemAddress as Hex,
+          abi: parseAbi([
+            "function purchaseItem(uint256 id, string memory userId) external payable",
+          ]),
+          functionName: "purchaseItem",
+          args: [BigInt(itemId), userId],
+          value: amount,
+        });
+      await this.walletClient.writeContract(request);
+
+      console.log("Confirming...");
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      console.log("Purchased!");
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  getPublicKey = () => {
+    return this.walletClient.account.address;
+  };
+
+  getBalance = async () => {
+    if (!this.walletClient) {
+      return 0;
+    }
+
+    const balance = await this.walletClient
+      .extend(publicActions)
+      .getBalance({ address: this.walletClient.account.address });
+    return Number(formatEther(balance));
+  };
+
+  isInitialized = () => Boolean(this.walletClient);
 }
