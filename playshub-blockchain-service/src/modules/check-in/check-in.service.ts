@@ -2,7 +2,7 @@ import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EvmWsProvidersService } from '../evm-ws-providers/evm-ws-providers.service';
 import { ethers } from 'ethers';
-import { CheckInAbi } from './abis/checkInAbi';
+import { CheckInAbi } from './abis/CheckInAbi';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
