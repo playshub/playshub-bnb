@@ -16,7 +16,7 @@ export class EvmWsProvidersService
 {
   private readonly logger = new Logger(EvmWsProvidersService.name);
 
-  private providers!: ethers.WebSocketProvider[];
+  private providers: ethers.WebSocketProvider[];
   private readonly rpcUrls: string[];
   private swapCounter = 0;
 
@@ -25,9 +25,9 @@ export class EvmWsProvidersService
   ) => void)[] = [];
 
   constructor(private readonly config: ConfigService) {
-    const rpcUrls = this.config.get<string>('RPC_URLS').split(',');
+    const rpcUrls = this.config.get<string>('RPC_URLS')?.split(',');
 
-    if (rpcUrls.length === 0) {
+    if (rpcUrls?.length === 0) {
       throw new Error('No RPC urls provided');
     }
 

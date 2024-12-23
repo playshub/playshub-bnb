@@ -41,9 +41,7 @@ class ResilientWebsocketProvider {
     this.subscriptions = new Set();
     this.reconnectionAttempts = 0;
     this.maxRetriesCallback = maxRetriesCallback;
-    this.logger = new Logger(
-      `${ResilientWebsocketProvider.name}(${this.name})`,
-    );
+    this.logger = new Logger(`${ResilientWebsocketProvider.name}(${this.url})`);
   }
 
   async connect(): Promise<WebSocketProvider | null> {
@@ -97,7 +95,7 @@ class ResilientWebsocketProvider {
 
         this.ws.on('close', () => {
           this.logger.error(
-            `The websocket connection was closed for ${this.name}`,
+            `The websocket connection was closed for ${this.url}`,
           );
           this.cleanupConnection();
           if (!this.terminate) {
@@ -111,7 +109,7 @@ class ResilientWebsocketProvider {
         });
 
         this.ws.on('error', (error) => {
-          this.logger.error(`WebSocket error for ${this.name}:`, error);
+          this.logger.error(`WebSocket error for ${this.url}:`, error);
         });
 
         this.ws.on('pong', () => {

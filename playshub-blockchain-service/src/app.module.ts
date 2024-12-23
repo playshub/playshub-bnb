@@ -8,9 +8,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { NotificationModule } from './modules/notification/notification.module';
-import { ContractSubscriberModule } from './modules/contract-subscriber/contract-subscriber.module';
 import { TelegramBotModule } from './modules/telegram-bot/telegram-bot.module';
-import { ObBnBCheckInSubscriberModule } from './modules/opbnb-check-in-subscriber/opbnb-check-in-subscriber.module';
+import { CheckInModule } from './modules/check-in/check-in.module';
+import { PurchaseItemModule } from './modules/purchase-item/purchase-item.module';
 
 @Module({
   imports: [
@@ -22,8 +22,8 @@ import { ObBnBCheckInSubscriberModule } from './modules/opbnb-check-in-subscribe
     // Imports
     NotificationModule,
     TelegramBotModule,
-    ContractSubscriberModule,
-    ObBnBCheckInSubscriberModule,
+    CheckInModule,
+    PurchaseItemModule,
   ],
   controllers: [AppController],
 })

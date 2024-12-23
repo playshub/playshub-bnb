@@ -16,11 +16,12 @@ export class PurchaseItemService implements OnApplicationBootstrap {
     private readonly configService: ConfigService,
     private readonly evmWsProvidersService: EvmWsProvidersService,
   ) {
-    this.purchaseItemAddress =
-      this.configService.get<string>('CHECK_IN_ADDRESS');
+    this.purchaseItemAddress = this.configService.get<string>(
+      'PURCHASE_ITEM_ADDRESS',
+    );
 
     if (!this.purchaseItemAddress) {
-      throw new Error('Check-in address is not provided');
+      throw new Error('purchase-item address is not provided');
     }
   }
 
@@ -48,7 +49,7 @@ export class PurchaseItemService implements OnApplicationBootstrap {
     );
 
     this.purchaseItemAddressContract.on(
-      'PurchaseItem',
+      'ItemPurchased',
       this.onPurchaseItem.bind(this),
     );
   }

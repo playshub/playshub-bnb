@@ -46,6 +46,6 @@ export class CheckInService implements OnApplicationBootstrap {
       this.provider,
     );
 
-    this.checkInAddressContract.on('CheckIn', this.onCheckIn.bind(this));
+    this.checkInAddressContract.on('CheckedIn', this.onCheckIn.bind(this));
   }
 }
