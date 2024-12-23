@@ -9,7 +9,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { NotificationModule } from './modules/notification/notification.module';
 import { ContractSubscriberModule } from './modules/contract-subscriber/contract-subscriber.module';
-import { TelegramPaymentSubscriberModule } from './modules/telegram-payment-subscriber/telegram-payment-subscriber.module';
+import { TelegramBotModule } from './modules/telegram-bot/telegram-bot.module';
 import { ObBnBCheckInSubscriberModule } from './modules/opbnb-check-in-subscriber/opbnb-check-in-subscriber.module';
 
 @Module({
@@ -21,8 +21,8 @@ import { ObBnBCheckInSubscriberModule } from './modules/opbnb-check-in-subscribe
 
     // Imports
     NotificationModule,
+    TelegramBotModule,
     ContractSubscriberModule,
-    TelegramPaymentSubscriberModule,
     ObBnBCheckInSubscriberModule,
   ],
   controllers: [AppController],
