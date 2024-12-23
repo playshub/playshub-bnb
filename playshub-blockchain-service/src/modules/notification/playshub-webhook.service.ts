@@ -19,18 +19,16 @@ export class PlayshubWebhookService {
   }
 
   @OnEvent('bsc.transactions')
-  async transactionHandler(txs: UserCheckIn[] | UserPurchaseItem[]) {
-    for (const tx of txs) {
-      switch (tx.type) {
-        case 'Check In':
-          this.checkInPush(tx as UserCheckIn);
-          break;
-        case 'Purchase Item':
-          this.purchaseItemPush(tx as UserPurchaseItem);
-          break;
-        default:
-          this.logger.error(`Unknown transaction: ${tx}`);
-      }
+  async transactionHandler(tx: UserCheckIn | UserPurchaseItem) {
+    switch (tx.type) {
+      case 'Check In':
+        this.checkInPush(tx as UserCheckIn);
+        break;
+      case 'Purchase Item':
+        this.purchaseItemPush(tx as UserPurchaseItem);
+        break;
+      default:
+        this.logger.error(`Unknown transaction: ${tx}`);
     }
   }
 
