@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { EvmWsProvidersService } from '../evm-ws-providers/evm-ws-providers.service';
 import { ethers } from 'ethers';
 import { PurchaseItemAbi } from './abis/PurchaseItemAbi';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class PurchaseItemService implements OnApplicationBootstrap {
@@ -15,6 +16,7 @@ export class PurchaseItemService implements OnApplicationBootstrap {
   constructor(
     private readonly configService: ConfigService,
     private readonly evmWsProvidersService: EvmWsProvidersService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     this.purchaseItemAddress = this.configService.get<string>(
       'PURCHASE_ITEM_ADDRESS',
@@ -37,8 +39,21 @@ export class PurchaseItemService implements OnApplicationBootstrap {
     await this.subscribeToPurchaseItem();
   }
 
-  async onPurchaseItem(...args) {
-    console.log('Check-in event:', args);
+  async onPurchaseItem(
+    sender: string,
+    id: string,
+    name: string,
+    price: string,
+    userId: string,
+  ) {
+    this.logger.debug('Found 1 PurchasedItem event');
+    this.eventEmitter.emit('bsc.PurchasedItem', {
+      sender,
+      id,
+      name,
+      price,
+      userId,
+    });
   }
 
   async subscribeToPurchaseItem() {

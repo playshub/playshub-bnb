@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { EvmWsProvidersService } from '../evm-ws-providers/evm-ws-providers.service';
 import { ethers } from 'ethers';
 import { CheckInAbi } from './abis/checkInAbi';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class CheckInService implements OnApplicationBootstrap {
@@ -15,6 +16,7 @@ export class CheckInService implements OnApplicationBootstrap {
   constructor(
     private readonly configService: ConfigService,
     private readonly evmWsProvidersService: EvmWsProvidersService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     this.checkInAddress = this.configService.get<string>('CHECK_IN_ADDRESS');
 
@@ -35,8 +37,21 @@ export class CheckInService implements OnApplicationBootstrap {
     await this.subscribeToCheckIn();
   }
 
-  async onCheckIn(...args) {
-    console.log('Check-in event:', args);
+  async onCheckIn(
+    sender: string,
+    token: string,
+    timestamp: string,
+    count: string,
+    userId: string,
+  ) {
+    this.logger.debug('Found 1 CheckedIn event');
+    this.eventEmitter.emit('bsc.CheckedIn', {
+      sender,
+      token,
+      timestamp,
+      count,
+      userId,
+    });
   }
 
   async subscribeToCheckIn() {
