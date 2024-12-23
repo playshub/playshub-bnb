@@ -45,13 +45,7 @@ export class CheckInService implements OnApplicationBootstrap {
     userId: string,
   ) {
     this.logger.debug('Found 1 CheckedIn event');
-    this.eventEmitter.emit('bsc.CheckedIn', {
-      sender,
-      token,
-      timestamp,
-      count,
-      userId,
-    });
+    this.eventEmitter.emit('bsc.transactions', { type: 'Check In', userId });
   }
 
   async subscribeToCheckIn() {

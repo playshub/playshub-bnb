@@ -47,12 +47,10 @@ export class PurchaseItemService implements OnApplicationBootstrap {
     userId: string,
   ) {
     this.logger.debug('Found 1 PurchasedItem event');
-    this.eventEmitter.emit('bsc.PurchasedItem', {
-      sender,
-      id,
-      name,
-      price,
+    this.eventEmitter.emit('bsc.transactions', {
+      type: 'Purchase Item',
       userId,
+      itemId: id,
     });
   }
 
