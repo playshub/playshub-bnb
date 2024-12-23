@@ -5,10 +5,10 @@
 ## Components
 
 - [playshub-blockchain-service](./playshub-blockchain-service/README.md): Off-chain service and handle check-in and purchasing events on BSC (NestJS, Webhooks)
+
 - playshub-contracts
 
   - [playshub-check-in-contracts](./playshub-contracts/playshub-check-in-contracts/README.md): The check-in contract is designed to support multiple currencies, allowing users to perform check-ins using various tokens, including BNB.
-
   - [playshub-shop-contracts](./playshub-contracts/playshub-shop-contracts/README.md): The shop contract is built to enable users to seamlessly purchase items on Playshub. It provides a secure and efficient mechanism for handling transactions, ensuring that users can acquire in-game items or services with ease
 
 - [playshub-sdk](./playshub-sdk/README.md): SDK for seamless integration with the BSC network (purchasing item, get balance) in pure JavaScript, making it easy to embed within Unity. (JS, Unity)
