@@ -2,23 +2,24 @@ import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EvmWsProvidersService } from '../evm-ws-providers/evm-ws-providers.service';
 import { ethers } from 'ethers';
-import { CheckInAbi } from './abis/checkInAbi';
+import { PurchaseItemAbi } from './abis/PurchaseItemAbi';
 
 @Injectable()
-export class CheckInService implements OnApplicationBootstrap {
-  private readonly logger = new Logger(CheckInService.name);
+export class PurchaseItemService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(PurchaseItemService.name);
 
-  private readonly checkInAddress: string;
+  private readonly purchaseItemAddress: string;
   private provider: ethers.WebSocketProvider;
-  private checkInAddressContract: ethers.Contract;
+  private purchaseItemAddressContract: ethers.Contract;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly evmWsProvidersService: EvmWsProvidersService,
   ) {
-    this.checkInAddress = this.configService.get<string>('CHECK_IN_ADDRESS');
+    this.purchaseItemAddress =
+      this.configService.get<string>('CHECK_IN_ADDRESS');
 
-    if (!this.checkInAddress) {
+    if (!this.purchaseItemAddress) {
       throw new Error('Check-in address is not provided');
     }
   }
@@ -28,24 +29,27 @@ export class CheckInService implements OnApplicationBootstrap {
       await this.evmWsProvidersService.getCurrentWebSocketProvider(
         async (provider) => {
           this.provider = provider;
-          await this.subscribeToCheckIn();
+          await this.subscribeToPurchaseItem();
         },
       );
 
-    await this.subscribeToCheckIn();
+    await this.subscribeToPurchaseItem();
   }
 
-  async onCheckIn(...args) {
+  async onPurchaseItem(...args) {
     console.log('Check-in event:', args);
   }
 
-  async subscribeToCheckIn() {
-    this.checkInAddressContract = new ethers.Contract(
-      this.checkInAddress,
-      CheckInAbi,
+  async subscribeToPurchaseItem() {
+    this.purchaseItemAddressContract = new ethers.Contract(
+      this.purchaseItemAddress,
+      PurchaseItemAbi,
       this.provider,
     );
 
-    this.checkInAddressContract.on('CheckIn', this.onCheckIn.bind(this));
+    this.purchaseItemAddressContract.on(
+      'PurchaseItem',
+      this.onPurchaseItem.bind(this),
+    );
   }
 }

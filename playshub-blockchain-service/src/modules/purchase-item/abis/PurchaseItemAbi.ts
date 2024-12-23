@@ -1,4 +1,4 @@
-export const CheckInAbi = [
+export const PurchaseItemAbi = [
   {
     inputs: [
       {
@@ -7,13 +7,18 @@ export const CheckInAbi = [
         type: 'address',
       },
       {
-        internalType: 'address[]',
-        name: '_initialTokens',
-        type: 'address[]',
+        internalType: 'uint256[]',
+        name: 'itemIds_',
+        type: 'uint256[]',
+      },
+      {
+        internalType: 'string[]',
+        name: 'itemNames_',
+        type: 'string[]',
       },
       {
         internalType: 'uint256[]',
-        name: '_initialValues',
+        name: 'itemPrices_',
         type: 'uint256[]',
       },
     ],
@@ -32,33 +37,27 @@ export const CheckInAbi = [
   },
   {
     inputs: [],
-    name: 'FailedCall',
-    type: 'error',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'balance',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'needed',
-        type: 'uint256',
-      },
-    ],
     name: 'InsufficientBalance',
     type: 'error',
   },
   {
     inputs: [],
-    name: 'InsufficientBalance',
+    name: 'InvalidItemStatus',
     type: 'error',
   },
   {
     inputs: [],
-    name: 'MismatchedArrayLengths',
+    name: 'ItemAlreadyExist',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'ItemLengthMisMatch',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'ItemNotExist',
     type: 'error',
   },
   {
@@ -84,30 +83,41 @@ export const CheckInAbi = [
     type: 'error',
   },
   {
-    inputs: [],
-    name: 'ReentrancyGuardReentrantCall',
-    type: 'error',
-  },
-  {
+    anonymous: false,
     inputs: [
       {
+        indexed: true,
         internalType: 'address',
-        name: 'token',
+        name: 'sender',
         type: 'address',
       },
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'id',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'name',
+        type: 'string',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'price',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'enum Status',
+        name: 'status',
+        type: 'uint8',
+      },
     ],
-    name: 'SafeERC20FailedOperation',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'TokenIsSupported',
-    type: 'error',
-  },
-  {
-    inputs: [],
-    name: 'TokenIsUnsupported',
-    type: 'error',
+    name: 'ItemAdded',
+    type: 'event',
   },
   {
     anonymous: false,
@@ -120,20 +130,20 @@ export const CheckInAbi = [
       },
       {
         indexed: true,
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-      {
-        indexed: false,
         internalType: 'uint256',
-        name: 'timestamp',
+        name: 'id',
         type: 'uint256',
       },
       {
         indexed: false,
+        internalType: 'string',
+        name: 'name',
+        type: 'string',
+      },
+      {
+        indexed: false,
         internalType: 'uint256',
-        name: 'count',
+        name: 'price',
         type: 'uint256',
       },
       {
@@ -143,7 +153,26 @@ export const CheckInAbi = [
         type: 'string',
       },
     ],
-    name: 'CheckedIn',
+    name: 'ItemPurchased',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'OwnershipTransferStarted',
     type: 'event',
   },
   {
@@ -182,38 +211,6 @@ export const CheckInAbi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'value',
-        type: 'uint256',
-      },
-    ],
-    name: 'TokenSupportAdded',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-    ],
-    name: 'TokenSupportRemoved',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
         indexed: false,
         internalType: 'address',
         name: 'account',
@@ -229,13 +226,7 @@ export const CheckInAbi = [
       {
         indexed: true,
         internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'to',
+        name: 'sender',
         type: 'address',
       },
       {
@@ -250,31 +241,43 @@ export const CheckInAbi = [
   },
   {
     inputs: [],
-    name: 'NATIVE_TOKEN',
+    name: 'VERSION',
     outputs: [
       {
-        internalType: 'address',
+        internalType: 'string',
         name: '',
-        type: 'address',
+        type: 'string',
       },
     ],
     stateMutability: 'view',
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'acceptOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [
       {
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
+        internalType: 'uint256',
+        name: 'id',
+        type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: 'name',
+        type: 'string',
       },
       {
         internalType: 'uint256',
-        name: 'value',
+        name: 'price',
         type: 'uint256',
       },
     ],
-    name: 'addSupportedToken',
+    name: 'addItem',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -282,89 +285,37 @@ export const CheckInAbi = [
   {
     inputs: [
       {
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-      {
-        internalType: 'string',
-        name: 'userId',
-        type: 'string',
+        internalType: 'uint256',
+        name: 'id',
+        type: 'uint256',
       },
     ],
-    name: 'checkIn',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'userId',
-        type: 'string',
-      },
-    ],
-    name: 'checkIn',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'userId',
-        type: 'string',
-      },
-    ],
-    name: 'checkInRecordOf',
+    name: 'getItem',
     outputs: [
       {
         components: [
           {
             internalType: 'uint256',
-            name: 'latestTimestamp',
+            name: 'id',
             type: 'uint256',
+          },
+          {
+            internalType: 'string',
+            name: 'name',
+            type: 'string',
           },
           {
             internalType: 'uint256',
-            name: 'count',
+            name: 'price',
             type: 'uint256',
           },
-        ],
-        internalType: 'struct PlayshubCheckIn.CheckInRecord',
-        name: '',
-        type: 'tuple',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-    ],
-    name: 'checkInTokenOf',
-    outputs: [
-      {
-        components: [
           {
-            internalType: 'bool',
-            name: 'isSupported',
-            type: 'bool',
-          },
-          {
-            internalType: 'uint256',
-            name: 'value',
-            type: 'uint256',
+            internalType: 'enum Status',
+            name: 'status',
+            type: 'uint8',
           },
         ],
-        internalType: 'struct PlayshubCheckIn.CheckInToken',
+        internalType: 'struct Item',
         name: '',
         type: 'tuple',
       },
@@ -406,16 +357,34 @@ export const CheckInAbi = [
     type: 'function',
   },
   {
-    inputs: [
+    inputs: [],
+    name: 'pendingOwner',
+    outputs: [
       {
         internalType: 'address',
-        name: 'token',
+        name: '',
         type: 'address',
       },
     ],
-    name: 'removeSupportToken',
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'id',
+        type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: 'userId',
+        type: 'string',
+      },
+    ],
+    name: 'purchaseItem',
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
     type: 'function',
   },
   {
@@ -447,34 +416,6 @@ export const CheckInAbi = [
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'to',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
-      },
-    ],
-    name: 'withdraw',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'to',
-        type: 'address',
-      },
       {
         internalType: 'uint256',
         name: 'amount',
