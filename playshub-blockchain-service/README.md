@@ -1,75 +1,78 @@
-# Cat Battle Blockchain
+# Playshub Blockchain Service
 
-`cat-battle-blockchain` handle payment processor on TON and notification for other payment status. `cat-battle-blockchain` stack consists of:
-
-- `postgres`: PostgreSQL server to store indexed data and perform queries.
-- `indexer-worker`: TON Index worker to read and parse data via [TON API Center](https://toncenter.com/)
-- `ws`: Provide websocket server for internal service listeners.
+`Playshub Blockchain Service` handle payment processor on BSC and notification for other service payment status.
 
 # Feature
 
-- Handle TON payment for Cat Battle Game
-- Send proceed TON payment events via websocket
-- Support withdraw and deposit TON
-- Further, Handle JETTON (CatB) & NFT (CatNFT) processing (Under development in `nft` branch)
+- Handle BSC payment for Playshub shop
+- Send proceed payment events via webhooks
 
 # Technique
 
-- Nestjs: Index work and parse TON transaction and express api server
-- Postgres: PostgreSQL server to store transaction data and perform queries.
+- Nestjs: Index work and parse BSC transaction and express api server
 - Socket.io: Push payment transaction to game server
-- TON client: Connect to TON HTTP API endpoint to get payment transaction
+- viem: a JavaScript library that provides tools for interacting with the BSC blockchain
 
 # How to run
 
 ## Running locally
 
-- Prerequisite: `Docker` and `Docker Compose`. Install via [download link](https://docs.docker.com/compose/install/).
+- Install package dependencies
 
 ```shell
-docker compose up -d --build
+pnpm install
+```
 
+- Prepare environment variables
+
+```shell
+cp .env.example .env
+```
+
+- Start
+
+```shell
+- dev: pnpm run start:dev
+- prod: pnpm run build & pnpm run start
 ```
 
 # Project Structure
 
 ```
-cat-battle-website/
+playshub-blockchain/
 ├── src/
-│   ├── migrations/
 │   ├── modules/
-│   │   ├── account-subscriber/
-│   │   ├── account-transaction/
-│   │   ├── hmac/
-│   │   ├── notification/
-│   │   ├── ton/
-│   │   └── ton-wallet/
-│   ├── utils/
-│   ├── app.controller.ts
+│   │   ├── check-in
+│   │   ├── evm-ws-providers
+│   │   ├── notification
+│   │   ├── purchase-item
+│   │   └── telegram-bot
+│   ├── types
+│   ├── utils
 │   ├── app.module.ts
 │   └── main.ts
 ├── .gitignore
-├── docker-compose.yml
-├── Dockerfile
 ├── package.json
 └── README.md
 ```
 
-- `src/`:` Contains the source code, including components and styles.
-- `migrations/`: Contains database TypeORM migrations scripts
-- `modules/account-subscriber`: TON payment processor
-- `modules/account-transaction`: parse and aggregate TON transaction
-- `modules/hmac`: HMAC authorize withdraw api for game server
-
-- `modules/notification`: Send `ws` or `webhook` for service listeners
-- `modules/ton`: TON client
-- `modules/ton-wallet`: TON wallet management (WalletV4R2, HighloadWallet) functionality
-- `utils/`: Contains utility functions, classes, and other helper modules that are used throughout the project
-- `main.ts`: Entry point for the React application.
+- `src/`: Contains the source code, including components and styles.
+- `modules/check-in`: Handles user check-ins with multi-currency support, including BNB.
+- `modules/evm-ws-providers`: WebSocket providers for EVM-based blockchain interactions.
+- `modules/notification`: Sends notifications via WebSocket or webhook for service listeners.
+- `modules/purchase-item`: Manages item purchases on Playshub using smart contracts.
+- `modules/telegram-bot`: Integrates Telegram bot for notifications and user interactions.
+- `types/`: Contains type definitions and interfaces for strong typing and consistency.
+- `utils/`: Contains utility functions, classes, and helpers used across the project.
+- `app.module.ts`: Main application module for organizing and managing modules.
+- `main.ts`: Entry point for the blockchain application.
+- `.gitignore`: Specifies files and directories to be ignored by Git.
+- `package.json`: Project metadata, dependencies, and scripts for managing the application.
+- `README.md`: Documentation for setup, usage, and development guidelines.
 
 # Authors and acknowledgment
 
-Cat Battle Team
+Playshub Team
 
 # License
 
@@ -77,4 +80,4 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 # Project status
 
-We are still developing this project following the roadmap in here: https://catb.io/
+We are still developing this project following the roadmap in here: https://playshub.io/
