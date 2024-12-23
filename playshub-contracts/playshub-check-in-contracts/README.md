@@ -1,13 +1,36 @@
-# Sample Hardhat Project
+# Check In contracts
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+The check-in contract is designed to support multiple currencies, allowing users to perform check-ins using various tokens, including BNB.
 
-Try running some of the following tasks:
+## Command
+
+### Compiler
 
 ```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.ts
+npm run compile
 ```
+
+### Test
+
+```shell
+npm run test
+```
+
+### Deploy
+
+```shell
+npm run deploy:testnet
+npm run deploy:opbnb
+```
+
+# Authors and acknowledgment
+
+Playshub Team
+
+# License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+# Project status
+
+We are still developing this project following the roadmap in here: https://playshub.io/
