@@ -45,13 +45,53 @@ export default class BscUnitySdk {
         throw new Error("Private key is not set");
       }
 
-      const [_, __, amount] = await this.walletClient
+      const { price: amount } = await this.walletClient
         .extend(publicActions)
         .readContract({
           address: this.config.purchaseItemAddress as Hex,
-          abi: parseAbi([
-            "function getItem(uint256 id) external view returns (uint256, string, uint256, uint8)",
-          ]),
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "id",
+                  type: "uint256",
+                },
+              ],
+              name: "getItem",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "name",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "price",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "enum Status",
+                      name: "status",
+                      type: "uint8",
+                    },
+                  ],
+                  internalType: "struct Item",
+                  name: "",
+                  type: "tuple",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+          ],
           functionName: "getItem",
           args: [BigInt(itemId)],
         });

@@ -1,5 +1,4 @@
 const path = require("path");
-const { ProvidePlugin } = require("webpack");
 
 module.exports = {
   entry: "./src/index.ts",
