@@ -50,7 +50,7 @@ export class PurchaseItemService implements OnApplicationBootstrap {
     this.eventEmitter.emit('bsc.transactions', {
       type: 'Purchase Item',
       userId,
-      itemId: id,
+      itemId: id.toString(),
     });
   }
 
