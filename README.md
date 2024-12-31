@@ -8,8 +8,8 @@
 
 - playshub-contracts
 
-  - [playshub-check-in-contracts](./playshub-contracts/playshub-check-in-contracts/README.md): The check-in contract is designed to support multiple currencies, allowing users to perform check-ins using various tokens, including BNB.
-  - [playshub-shop-contracts](./playshub-contracts/playshub-shop-contracts/README.md): The shop contract is built to enable users to seamlessly purchase items on Playshub. It provides a secure and efficient mechanism for handling transactions, ensuring that users can acquire in-game items or services with ease
+  - [playshub-check-in-contracts](./playshub-contracts/playshub-check-in-contracts/README.md): The check-in contract is designed to support multiple currencies, allowing users to perform check-ins using various tokens, including BNB. Contract address at: [0xecd47e670f57230765dee721b25c92424ee86b6a](https://testnet.bscscan.com/address/0xecd47e670f57230765dee721b25c92424ee86b6a)
+  - [playshub-shop-contracts](./playshub-contracts/playshub-shop-contracts/README.md): The shop contract is built to enable users to seamlessly purchase items on Playshub. It provides a secure and efficient mechanism for handling transactions, ensuring that users can acquire in-game items or services with ease. Contract address at: [0x5e85cb1ac669112d52c733d7429e71af3843cd8c](https://testnet.bscscan.com/address/0x5e85cb1ac669112d52c733d7429e71af3843cd8c)
 
 - [playshub-sdk](./playshub-sdk/README.md): SDK for seamless integration with the BSC network (purchasing item, get balance) in pure JavaScript, making it easy to embed within Unity. (JS, Unity)
 
